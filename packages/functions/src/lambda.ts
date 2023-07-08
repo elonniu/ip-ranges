@@ -110,16 +110,16 @@ export async function handle() {
 
     const json = {
         ranges_url,
-        diff: {
-            ip_sum_diff: ip_sum_diff.toLocaleString('en-US'),
-            ip_region_diff: Object.keys(ip_region_diff) ? undefined : ip_region_diff,
-            ip_service_diff: Object.keys(ip_service_diff) ? undefined : ip_service_diff,
-            prefix_num_diff: Object.keys(prefix_num_diff) ? undefined : prefix_num_diff,
-        },
+
+        ip_sum_diff: ip_sum_diff !== 0 ? ip_sum_diff.toLocaleString('en-US') : undefined,
+        ip_region_diff: Object.keys(ip_region_diff) ? undefined : ip_region_diff,
+        ip_service_diff: Object.keys(ip_service_diff) ? undefined : ip_service_diff,
+        prefix_num_diff: Object.keys(prefix_num_diff) ? undefined : prefix_num_diff,
+
         ip_sum: ip_sum.toLocaleString('en-US'),
-        prefix_num,
-        ip_service,
         ip_region,
+        ip_service,
+        prefix_num,
     };
 
     await feishu(json);
