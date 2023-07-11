@@ -1,5 +1,6 @@
-import { SSTConfig } from "sst";
-import { API } from "./stacks/MyStack";
+import {SSTConfig} from "sst";
+import {API} from "./stacks/MyStack";
+import {RemovalPolicy} from "aws-cdk-lib";
 
 export default {
   config(_input) {
@@ -9,6 +10,7 @@ export default {
     };
   },
   stacks(app) {
+    app.setDefaultRemovalPolicy(RemovalPolicy.DESTROY);
     app.stack(API);
   }
 } satisfies SSTConfig;
