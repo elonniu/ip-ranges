@@ -37,8 +37,8 @@ export function API({stack, app}: StackContext) {
                     eventSource: {
                         retryAttempts: 0,
                         startingPosition: StartingPosition.LATEST,
-                        batchSize: 200,
-                        maxBatchingWindow: Duration.seconds(10),
+                        batchSize: 100,
+                        maxBatchingWindow: Duration.seconds(5),
                     },
                 },
                 function: trigger,
