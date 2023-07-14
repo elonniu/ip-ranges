@@ -1,6 +1,10 @@
 import {feishu} from "sst-helper";
 import {dynamoDb} from "../lib/ddb";
 import {TableName} from "./lambda";
+import AWS from "aws-sdk";
+import {Topic} from "sst/node/topic";
+
+const sns = new AWS.SNS();
 
 export async function handler(event: any) {
     const {Records} = event;
@@ -52,6 +56,14 @@ export async function handler(event: any) {
         update,
         ...obj
     });
+
+    await sns.publish({
+        TopicArn: Topic.Notification.topicArn,
+        Message: JSON.stringify({
+            update,
+            ...obj
+        }, null, 2)
+    }).promise()
 
     return {};
 }

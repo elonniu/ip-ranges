@@ -1,5 +1,5 @@
 import {Cron, Function, StackContext, Table, Topic} from "sst/constructs";
-import {ddbUrl, lambdaUrl} from "sst-helper";
+import {ddbUrl, lambdaUrl, topicUrl} from "sst-helper";
 import * as sns from "aws-cdk-lib/aws-sns";
 import {StartingPosition} from "aws-cdk-lib/aws-lambda";
 import {Duration} from "aws-cdk-lib";
@@ -13,6 +13,8 @@ export function API({stack, app}: StackContext) {
         "arn:aws:sns:us-east-1:806199016981:AmazonIpSpaceChanged"
     );
 
+    const mail = new Topic(stack, "Notification");
+
     const trigger = new Function(
         stack, 'Trigger',
         {
@@ -20,6 +22,7 @@ export function API({stack, app}: StackContext) {
             handler: "packages/functions/src/ddb_trigger.handler",
             memorySize: 2048,
             timeout: 20,
+            bind: [mail],
             environment: {
                 FEISHU_ID: process.env.FEISHU_ID || '',
             }
@@ -81,6 +84,8 @@ export function API({stack, app}: StackContext) {
 
     stack.addOutputs({
         lambda: lambdaUrl(updateIpRanges.functionName, stack.region),
-        table: ddbUrl(table.tableName, stack.region)
+        trigger: lambdaUrl(trigger.functionName, stack.region),
+        table: ddbUrl(table.tableName, stack.region),
+        topic: topicUrl(mail.topicArn, stack.region),
     });
 }
