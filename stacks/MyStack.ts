@@ -1,4 +1,4 @@
-import {Function, StackContext, Table, Topic} from "sst/constructs";
+import {Cron, Function, StackContext, Table, Topic} from "sst/constructs";
 import {ddbUrl, lambdaUrl} from "sst-helper";
 import * as sns from "aws-cdk-lib/aws-sns";
 import {StartingPosition} from "aws-cdk-lib/aws-lambda";
@@ -37,7 +37,7 @@ export function API({stack, app}: StackContext) {
                     eventSource: {
                         retryAttempts: 0,
                         startingPosition: StartingPosition.LATEST,
-                        batchSize: 100,
+                        batchSize: 20,
                         maxBatchingWindow: Duration.seconds(5),
                     },
                 },
@@ -48,7 +48,7 @@ export function API({stack, app}: StackContext) {
 
     trigger.bind([table]);
 
-    const fun = new Function(stack, 'Function',
+    const updateIpRanges = new Function(stack, 'updateIpRanges',
         {
             runtime: 'nodejs18.x',
             handler: "packages/functions/src/lambda.handle",
@@ -60,17 +60,27 @@ export function API({stack, app}: StackContext) {
             }
         });
 
-    !app.local && new Topic(stack, "Topic", {
-        subscribers: {
-            subscriber1: fun,
-        },
-        cdk: {
-            topic,
-        },
-    });
+    if (!app.local) {
+
+        new Topic(stack, "Topic", {
+            subscribers: {
+                subscriber1: updateIpRanges,
+            },
+            cdk: {
+                topic,
+            },
+        });
+
+        new Cron(stack, "updateIpRangesCron", {
+            schedule: "rate(2 hours)",
+            job: {
+                function: updateIpRanges
+            },
+        });
+    }
 
     stack.addOutputs({
-        lambda: lambdaUrl(fun.functionName, stack.region),
+        lambda: lambdaUrl(updateIpRanges.functionName, stack.region),
         table: ddbUrl(table.tableName, stack.region)
     });
 }

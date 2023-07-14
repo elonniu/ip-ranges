@@ -18,7 +18,7 @@ async function ddbPut(table: string, items: object[]) {
         return Promise.all(promises);
     };
 
-    batchWriteParallel(items)
+    await batchWriteParallel(items)
         .then((data) => {
             console.log('batchWriteParallel succeed: ', data);
         })

@@ -65,7 +65,7 @@ export async function handle() {
     for (const [key, value] of Object.entries(service_ip)) {
         list.push({
             name: "service",
-            key,
+            key: key.toLowerCase(),
             value
         });
     }
