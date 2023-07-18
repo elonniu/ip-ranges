@@ -1,6 +1,6 @@
 import {feishu} from "sst-helper";
 import {dynamoDb} from "../lib/ddb";
-import {TableName} from "./lambda";
+import {ranges_url, TableName} from "./lambda";
 import AWS from "aws-sdk";
 import {Topic} from "sst/node/topic";
 
@@ -60,6 +60,7 @@ export async function handler(event: any) {
     await sns.publish({
         TopicArn: Topic.Notification.topicArn,
         Message: JSON.stringify({
+            ranges_url,
             update,
             ...obj
         }, null, 2)
