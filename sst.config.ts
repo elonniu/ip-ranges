@@ -6,7 +6,7 @@ export default {
   config(_input) {
     return {
       name: "ip-ranges",
-      region: "ap-southeast-1",
+      region: "ap-northeast-1",
     };
   },
   stacks(app) {
